@@ -652,12 +652,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73683b7194ed3cf4ba4ce9472fc92b42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  jumpForce: 12
   moveSpeed_horizontal: 350
   moveSpeed_vertical: 0
   is_jumping: 0
+  is_dashing: 0
   aerial: 0
   can_jump: 0
   smooth_time: 0.5
+  gravityfall: 7
+  smoothdash: 0.06
+  speedverti: 550
+  speedhori: 600
+  fallGravityMultiplier: 0
 --- !u!95 &694507428
 Animator:
   serializedVersion: 5

@@ -19,8 +19,15 @@ public class Player : MonoBehaviour
     [SerializeField] bool aerial = false;
     [SerializeField] bool can_jump = false;
     [Range(0, 1)][SerializeField] float smooth_time = 0.5f;
+    [Range(0, 15)][SerializeField] float gravityfall;
 
-    
+    [SerializeField] float smoothdash;
+
+    [SerializeField] float speedverti;
+    [SerializeField] float speedhori;
+
+    [SerializeField] int fallGravityMultiplier;
+
 
     // Start is called before the first frame update
     void Start()
@@ -73,8 +80,19 @@ public class Player : MonoBehaviour
         else if (is_dashing)
         {
             Vector2 target_velocitydash = new Vector2(horizontal_value * moveSpeed_horizontal * Time.fixedDeltaTime, vertical_value * moveSpeed_vertical * Time.fixedDeltaTime);
-            rb.velocity = Vector2.SmoothDamp(rb.velocity, target_velocitydash, ref ref_velocity, 0.05f);
+            rb.velocity = Vector2.SmoothDamp(rb.velocity, target_velocitydash, ref ref_velocity, smoothdash);
+            
         }
+       /* #region
+        if (rb.velocity.y < 0)
+        {
+            rb.gravityScale = gravityfall * fallGravityMultiplier;
+        }
+        else
+        {
+            rb.gravityScale = gravityfall;
+        }
+        #endregion */
     }
     private void OnTriggerStay2D(Collider2D collision)
     {
@@ -96,8 +114,8 @@ public class Player : MonoBehaviour
         animController.SetBool("Aerial", true);
         animController.SetBool("Jumping", false);
         rb.gravityScale = 0;
-        moveSpeed_vertical = 500f;
-        moveSpeed_vertical = 500f;
+        moveSpeed_vertical = speedverti;
+        moveSpeed_horizontal = speedhori;
 
         yield return new WaitForSeconds(1.2f);
         is_dashing = false;
@@ -105,7 +123,7 @@ public class Player : MonoBehaviour
         moveSpeed_vertical = 0f;
         moveSpeed_vertical = 400f;
         moveSpeed_horizontal = 550f;
-        rb.gravityScale = 5.5f;
+        rb.gravityScale = gravityfall;
     }
 
 }
