@@ -774,12 +774,13 @@ MonoBehaviour:
   smooth_time: 0.1
   is_dashing: 0
   aerial: 0
+  MadeADash: 0
   smoothdash: 0.06
   speedverti: 550
   speedhori: 600
   gravityfall: 7
   IsGrounded: 0
-  CountJump: 2
+  CountJump: 1
   jumpForceAerial: 15
   dashingPower: 30
   dashingTime: 0.2

@@ -23,6 +23,8 @@ public class Player : MonoBehaviour
     //DASH PROPULSION
     [SerializeField] bool is_dashing = false;
     [SerializeField] bool aerial = false;
+    [SerializeField] bool MadeADash = false;
+    
 
     float Timerseconde = 1.2f;
 
@@ -35,7 +37,7 @@ public class Player : MonoBehaviour
 
     //DOUBLE JUMP
     [SerializeField] bool IsGrounded = false;
-    [SerializeField] int CountJump = 2;
+    [SerializeField] int CountJump;
     private int LastPressedJumpTime = 0;
     private int LastOnGroundTime = 0;
     [SerializeField] float jumpForceAerial;
@@ -48,7 +50,13 @@ public class Player : MonoBehaviour
     [SerializeField] private float dashingTime ;
     [SerializeField] private float dashingCooldown ;
     [SerializeField] private TrailRenderer tr;
+
+
+
+    //test
+    private int Vol = 0;
     
+
 
     void Start()
     {
@@ -92,14 +100,23 @@ public class Player : MonoBehaviour
         // Fire1 = à la touche X
         if (Input.GetButton("Fire1") && is_dashing == false && aerial)
         {
-            StartCoroutine(DashPropulsion());
+            //StartCoroutine(DashPropulsion());
+            if (MadeADash)
+            {
 
+            }
+            else
+            {
+                DashPropulsion2();
+                Invoke("ChuteDashPropulsion", Timerseconde);
+            }
         }
         
         // Fire 2 = a la touche B
         if (Input.GetButtonDown("Fire2") && canDash)
         {
             StartCoroutine(Dash());
+            
         }
     }
 
@@ -151,12 +168,13 @@ public class Player : MonoBehaviour
             
         }
 
-
-        /* if (horizontal_value == 0)
+        //Stopper le dashProp si le player stop les mouvements pour eviter de flotter immobile
+         if ((horizontal_value == 0 && vertical_value ==0) && is_dashing)
          {
-             Timerseconde = 0;
+            Debug.Log("Beh");
+             ChuteDashPropulsion();
          }
-         */
+         
          
         
         
@@ -165,12 +183,13 @@ public class Player : MonoBehaviour
     // Lorsque le personnage touche le sol
     private void OnTriggerStay2D(Collider2D collision)
     {
+        MadeADash = false;
         can_jump = true;
         aerial = false;
         rb.gravityScale = 4f;
         moveSpeed_horizontal = 500f;
         animController.SetBool("Jumping", false);
-        CountJump = 2; //reset double saut quand on touche le sol
+        CountJump = 1; //reset double saut quand on touche le sol
         
         Timerseconde = 1.2f;
     }
@@ -178,7 +197,7 @@ public class Player : MonoBehaviour
  
 
     // Co routine pour modifier les variables necessaires, couper l'anim de jump et changer la gravité et les controles pendant 1.2s puis remettre ce qu'il faut
-    IEnumerator DashPropulsion()
+    /*IEnumerator DashPropulsion()
     {
         is_dashing = true;
         animController.SetBool("Aerial", true);
@@ -195,6 +214,33 @@ public class Player : MonoBehaviour
         moveSpeed_vertical = 400f;
         moveSpeed_horizontal = 550f;
         rb.gravityScale = gravityfall;
+    }*/
+
+   
+    
+    private void DashPropulsion2()
+    {
+        MadeADash = true;
+        is_dashing = true;
+        animController.SetBool("Aerial", true);
+        animController.SetBool("Jumping", false);
+        rb.gravityScale = 0;
+        moveSpeed_vertical = speedverti;
+        moveSpeed_horizontal = speedhori;
+        
+    }
+    private void ChuteDashPropulsion()
+    {
+        
+            is_dashing = false;
+            animController.SetBool("Aerial", false);
+
+            moveSpeed_vertical = 400f;
+            moveSpeed_horizontal = 550f;
+            rb.gravityScale = gravityfall;
+            
+        
+
     }
 
     IEnumerator Dash()
