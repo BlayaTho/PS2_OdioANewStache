@@ -54,7 +54,7 @@ public class Player : MonoBehaviour
 
 
     //test
-    private int Vol = 0;
+    
     
 
 
@@ -109,15 +109,17 @@ public class Player : MonoBehaviour
             {
                 DashPropulsion2();
                 Invoke("ChuteDashPropulsion", Timerseconde);
+                
             }
         }
-        
+
         // Fire 2 = a la touche B
         if (Input.GetButtonDown("Fire2") && canDash)
         {
             StartCoroutine(Dash());
-            
+
         }
+
     }
 
     void PhysicDoubleJump()
@@ -149,7 +151,10 @@ public class Player : MonoBehaviour
             rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
             can_jump = false;
         }
-
+        if (aerial && is_dashing == false)
+        {
+            rb.gravityScale = 5f;
+        }
         if (isDashing)
         {
             return;
@@ -169,15 +174,12 @@ public class Player : MonoBehaviour
         }
 
         //Stopper le dashProp si le player stop les mouvements pour eviter de flotter immobile
-         if ((horizontal_value == 0 && vertical_value ==0) && is_dashing)
+         if ((horizontal_value == 0 && vertical_value ==0) &&is_dashing)
          {
-            Debug.Log("Beh");
+            Debug.Log("cum");
              ChuteDashPropulsion();
          }
-         
-         
-        
-        
+          
     }
 
     // Lorsque le personnage touche le sol
@@ -231,15 +233,12 @@ public class Player : MonoBehaviour
     }
     private void ChuteDashPropulsion()
     {
-        
             is_dashing = false;
             animController.SetBool("Aerial", false);
-
+        
             moveSpeed_vertical = 400f;
             moveSpeed_horizontal = 550f;
             rb.gravityScale = gravityfall;
-            
-        
 
     }
 
