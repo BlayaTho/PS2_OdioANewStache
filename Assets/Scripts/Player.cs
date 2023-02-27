@@ -28,6 +28,13 @@ public class Player : MonoBehaviour
     private bool isFacingRight = true;
     #endregion
 
+    #region HEALTHBAR
+    [Header("STAMINA")]
+    public int maxHealth;
+    public int currentHealth;
+    public HealthBar healthBar;
+    #endregion
+
     #region DOUBLE JUMP VAR
     [Header("DOUBLE JUMP")]
     [SerializeField] float jumpForceAerial;
@@ -42,7 +49,10 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
         animController = GetComponent<Animator>();
-        
+
+        currentHealth = maxHealth;
+        healthBar.SetMaxHealth(maxHealth);
+
     }
 
     void Update()
@@ -147,6 +157,7 @@ public class Player : MonoBehaviour
             moveSpeed_horizontal = 720f;
             animController.SetBool("Jumping", false);
             CountJump = 1; //reset double saut quand on touche le sol
+            
         }
 
 
@@ -169,6 +180,12 @@ public class Player : MonoBehaviour
 
         rb.AddForce(Vector2.up * force, ForceMode2D.Impulse);
 
+    }
+
+    public void TakeDamage(int damage)
+    {
+        currentHealth -= damage;
+        healthBar.SetHealth(currentHealth);
     }
     /*private void Flip()
     {

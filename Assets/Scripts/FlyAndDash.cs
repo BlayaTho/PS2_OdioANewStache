@@ -22,7 +22,7 @@ public class FlyAndDash : MonoBehaviour
     [Header("STAMINA")]
     public float maxStamina;
     public float currentStamina;
-    [SerializeField] HealthBar healthBar;
+    [SerializeField] StaminaBar staminaBar;
     //private bool Recharging = false;
     #endregion
 
@@ -43,7 +43,7 @@ public class FlyAndDash : MonoBehaviour
     {
         maxStamina = timerStamina;
         currentStamina = maxStamina;
-        healthBar.SetMaxHealth(maxStamina);
+        staminaBar.SetMaxStamina(maxStamina);
     }
 
     
@@ -128,7 +128,7 @@ public class FlyAndDash : MonoBehaviour
         if (timerStamina > 0)
         {
             currentStamina -= Time.deltaTime;
-            healthBar.SetHealth(currentStamina);
+            staminaBar.SetStamina(currentStamina);
         }
         if (timerStamina < 0)
         {
@@ -142,7 +142,7 @@ public class FlyAndDash : MonoBehaviour
         if (currentStamina < maxStamina)
         {
             currentStamina += Time.deltaTime * 2.5f;
-            healthBar.SetHealth(currentStamina);
+            staminaBar.SetStamina(currentStamina);
         }
         if (currentStamina > maxStamina)
         {
