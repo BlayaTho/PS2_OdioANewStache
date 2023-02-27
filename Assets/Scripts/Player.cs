@@ -5,73 +5,37 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    Rigidbody2D rb;
+     public FlyAndDash flyDash;
+     public Rigidbody2D rb;
     SpriteRenderer sr;
     Animator animController;
-     float horizontal_value;
-     float vertical_value;
+    [HideInInspector] public float horizontal_value;
+    [HideInInspector] public float vertical_value;
     
     Vector2 ref_velocity = Vector2.zero;
 
+    #region MOVEMENT VAR
     [Header("MOVEMENT")]
     [SerializeField] float jumpForce ;
-    [SerializeField] float moveSpeed_horizontal ;
-    [SerializeField] float moveSpeed_vertical = 0f;
-    [SerializeField] bool duringJump = false;
+    [SerializeField] public float moveSpeed_horizontal ;
+    [HideInInspector] public float moveSpeed_vertical = 0f;
+    [SerializeField] public bool duringJump = false;
     [SerializeField] bool can_jump = false;
     [Range(0, 1)][SerializeField] float smooth_time ;
     [SerializeField] float maxFallSpeed;
+    private bool is_jumping = false;
+    [HideInInspector] public bool releasejump = false;
     private bool isFacingRight = true;
-    bool is_jumping = false;
-    private bool releasejump = false;
-    
+    #endregion
 
-    [Header("DASH")]
-    [SerializeField] private float dashingPower;
-    [SerializeField] private float dashingCooldown;
-    [SerializeField] private float dashingBeforeFlyCooldown;
-    [SerializeField] private TrailRenderer tr;
-    private Vector2 dashingdirection;
-    private bool canDash = true;
-    private bool isDashing;
-    
-
-
-    [Header("VOL")]
-    [SerializeField] bool is_flying = false;
-    [SerializeField] bool aerial = false;
-    [SerializeField] bool MadeAFly = false;
-    [SerializeField] float speedverti;
-    [SerializeField] float speedhori;
-    [Range(0, 15)][SerializeField] float gravityfall;
-    [SerializeField] float Timerseconde;
-    private float smoothdash = 0.06f;
-    bool Govol = false;
-    bool flyactivated = false;
-
-
+    #region DOUBLE JUMP VAR
     [Header("DOUBLE JUMP")]
     [SerializeField] float jumpForceAerial;
     [SerializeField] int CountJump;
     private int LastPressedJumpTime = 0;
     private int LastOnGroundTime = 0;
     private bool IsGrounded = false;
-    
-
-
-    
-    
-
-
-
-
-    /*[Header("test wall slide")]
-    [SerializeField] private float wallSlidingSpeed ;
-    [SerializeField] private Transform wallCheck;
-    [SerializeField] private LayerMask wallLayer;
-    bool isWallSliding;*/
-
-    
+    #endregion
 
     void Start()
     {
@@ -83,99 +47,41 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        #region CAPTURE DONNEES
         horizontal_value = Input.GetAxis("Horizontal");
         vertical_value = Input.GetAxis("Vertical");
-
-     
-
-        Flip();
-       // WallSlide();
-       
-        
+        if(horizontal_value < 0)
+        {
+            sr.flipX = true;
+        }
+        else
+        {
+            sr.flipX = false;
+        }
+        // Flip();
         animController.SetFloat("Speed", Mathf.Abs(horizontal_value));
-   
-    
-        //Jump = à la touche A et Y
+        #endregion
+
+        #region JUMP IF
+        //Jump = à la touche A et Y, DUALSENSE = carré et triangle
         if (Input.GetButton("Jump") && can_jump)
         {
-            
             is_jumping = true;
             animController.SetBool("Jumping", true);
-           
         }
-        if(Input.GetButtonUp("Jump"))
-        {
-            
-            
-            releasejump = true;
-        }
-        
+        // active la variable qui annonce qu'on a laché le bouton jump
+        if(Input.GetButtonUp("Jump")) releasejump = true;
 
-        if (Input.GetButtonDown("Jump") && aerial && CountJump > 0)
+        //Active DoubleJump si le personnage est en l'air et si il lui reste des double jump
+        if (Input.GetButtonDown("Jump") && duringJump && CountJump > 0)
         {
             releasejump = false;
             PhysicDoubleJump();
-
         }
-
-        
-      
-        // Fire1 = à la touche X
-        if (Input.GetButton("Fire1") && is_flying == false && aerial)
-        {
-            
-            if (MadeAFly) { }
-            else
-            {
-                flyactivated = true;
-                isDashing = true;
-                canDash = false;
-                tr.emitting = true;
-                dashingdirection = new Vector2(horizontal_value, vertical_value);
-               
-                if (dashingdirection == Vector2.zero)
-                {
-                    dashingdirection = new Vector2(transform.localScale.x, y: 0);
-                }
-                releasejump = false;
-                
-                Invoke("Vol", 0.25f);
-                duringJump = false;
-                Invoke("ChuteVol", Timerseconde);
-                StartCoroutine(StopDashing());
-
-      
-            }
-        }
-        
-        
-
-        // Fire 2 = a la touche B
-        if (Input.GetButtonDown("Fire2") && canDash)
-        {
-            
-            isDashing = true;
-            canDash = false;
-            tr.emitting = true;
-            dashingdirection = new Vector2(horizontal_value, vertical_value);
-            if(dashingdirection == Vector2.zero)
-            {
-                dashingdirection = new Vector2(transform.localScale.x, y:0);
-            }
-            StartCoroutine(StopDashing());
-            
-        }
-
-        if(isDashing)
-        {
-            rb.velocity = dashingdirection.normalized * dashingPower;
-            return;
-        }
-        
-       
+        #endregion
     }
 
-  
+
 
     void FixedUpdate()
     {
@@ -183,7 +89,7 @@ public class Player : MonoBehaviour
         {           
             is_jumping = false;
             duringJump = true;
-            aerial = true;
+            flyDash.aerial = true;
             
             
                 rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
@@ -192,16 +98,16 @@ public class Player : MonoBehaviour
         }
         
         
-       
-        if (releasejump && duringJump && isDashing == false && is_flying == false)
+       // Higher gravity when falling of a jump
+        if (releasejump && duringJump && flyDash.isDashing == false && flyDash.is_flying == false)
         {
             
             rb.AddForce(new Vector2(0, -50), ForceMode2D.Force);
         }
 
       
-      
-        if(rb.velocity.y < 0 && is_flying == false)
+      // Vitesse de chute limité 
+        if(rb.velocity.y < 0 && flyDash.is_flying == false)
         {
             
             rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, maxFallSpeed));
@@ -210,31 +116,17 @@ public class Player : MonoBehaviour
 
         
         // flip flop pour couper le rb velocity du premier vector qui bloque les deplacements sur le y lors du vol
-        if (is_flying == false)
+        if (flyDash.is_flying == false)
         {
             Vector2 target_velocity = new Vector2(horizontal_value * moveSpeed_horizontal * Time.fixedDeltaTime, rb.velocity.y);
             rb.velocity = Vector2.SmoothDamp(rb.velocity, target_velocity, ref ref_velocity, smooth_time);
         }
-        else if (is_flying)
+        else if (flyDash.is_flying)
         {
             Vector2 target_velocitydash = new Vector2(horizontal_value * moveSpeed_horizontal * Time.fixedDeltaTime, vertical_value * moveSpeed_vertical * Time.fixedDeltaTime);
-            rb.velocity = Vector2.SmoothDamp(rb.velocity, target_velocitydash, ref ref_velocity, smoothdash);
+            rb.velocity = Vector2.SmoothDamp(rb.velocity, target_velocitydash, ref ref_velocity, flyDash.smoothFly);
             
         }
-        //BIG GROS
-       /* if(horizontal_value != 0 && is_flying && vertical_value ==0)
-        {
-            rb.AddForce(new Vector2(15, 50f));
-            
-            
-        }*/
-
-        //Stopper le vol si le player stop les mouvements pour eviter de flotter immobile
-         if ((horizontal_value == 0 && vertical_value ==0) && is_flying)
-         {
-            
-             ChuteVol();
-         }
           
     } //FIN DU FIXUPDATE
 
@@ -242,70 +134,25 @@ public class Player : MonoBehaviour
     // Lorsque le personnage touche le sol
     private void OnTriggerStay2D(Collider2D collision)
     {
-        
-        MadeAFly = false;
-        releasejump = false;
-        can_jump = true;
-        aerial = false;
-        canDash = true;
-        rb.gravityScale = 4f;
-        moveSpeed_horizontal = 720f;
-        animController.SetBool("Jumping", false);
-        CountJump = 1; //reset double saut quand on touche le sol
-        
-        
+        if (collision.CompareTag("Ground"))
+        {
+            flyDash.RegenBar();
+            flyDash.MadeAFly = false;
+            duringJump = false;
+            releasejump = false;
+            can_jump = true;
+            flyDash.aerial = false;
+            flyDash.canDash = true;
+            rb.gravityScale = 4f;
+            moveSpeed_horizontal = 720f;
+            animController.SetBool("Jumping", false);
+            CountJump = 1; //reset double saut quand on touche le sol
+        }
+
+
     }
 
     #region ENUM VOID
-
-    private IEnumerator StopDashing()
-    {
-        if (flyactivated)
-        {
-            yield return new WaitForSeconds(dashingBeforeFlyCooldown);
-            
-            isDashing = false;
-            Govol = true;
-        }
-        else
-        {
-            yield return new WaitForSeconds(dashingCooldown);
-            if (is_flying == false)
-            {
-                tr.emitting = false;
-            }
-            isDashing = false;
-            Govol = true;
-        }
-    }
-
-
-    private void Vol()
-    {
-        MadeAFly = true;
-        is_flying = true;
-        animController.SetBool("Aerial", true);
-        animController.SetBool("Jumping", false);
-        rb.gravityScale = 0;
-        moveSpeed_vertical = speedverti;
-        moveSpeed_horizontal = speedhori;
-        
-        
-    }
-    private void ChuteVol()
-    {
-            is_flying = false;
-            tr.emitting = false;
-            Govol = false;
-            animController.SetBool("Aerial", false);
-        
-            moveSpeed_vertical = 400f;
-            moveSpeed_horizontal = 550f;
-            rb.gravityScale = gravityfall;
-
-    }
-
-
     void PhysicDoubleJump()
     {
         // Garantit que nous ne pouvons pas appeler Jump plusieurs fois à partir d'une seule pression
@@ -323,7 +170,7 @@ public class Player : MonoBehaviour
         rb.AddForce(Vector2.up * force, ForceMode2D.Impulse);
 
     }
-    private void Flip()
+    /*private void Flip()
     {
         if (isFacingRight && horizontal_value < 0f || !isFacingRight && horizontal_value > 0f)
         {
@@ -332,28 +179,9 @@ public class Player : MonoBehaviour
             localScale.x *= -1f;
             transform.localScale = localScale;
         }
-    }
+    }*/
 
-    /* #region WALLSLIDE
-   bool IsWalled()
-   {
-       return Physics2D.OverlapCircle(wallCheck.position, 0.2f, wallLayer);
-   }
-
-       void WallSlide()
-   {
-       if (IsWalled() && !can_jump && horizontal_value != 0f)
-       {
-           isWallSliding = true;
-           rb.velocity = new Vector2(rb.velocity.x, Mathf.Clamp(rb.velocity.y, -wallSlidingSpeed, float.MaxValue));
-
-       }
-       else
-       {
-           isWallSliding = false;
-       }
-   }
-   #endregion */
+   
     #endregion
 
 }
