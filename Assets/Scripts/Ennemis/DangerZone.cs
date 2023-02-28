@@ -31,7 +31,7 @@ public class DangerZone : MonoBehaviour
             }
         }
     }
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnCollisionEnter2D(Collision2D collision)
     {
         horizontalinverse = player.horizontal_value;
         verticalinverse = player.vertical_value;
@@ -39,7 +39,7 @@ public class DangerZone : MonoBehaviour
         hurt = true;
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    private void OnCollisionExit2D(Collision2D collision)
     {
         hurt = false;
     }

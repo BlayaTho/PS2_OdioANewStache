@@ -12,7 +12,7 @@ public class SpeedBoost : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (pass == false)
+        if (pass == false && flyDash.is_flying == true)
         {
             flyDash.timerStamina += 2f;
             flyDash.currentStamina += 2;
