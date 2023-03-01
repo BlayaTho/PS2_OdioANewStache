@@ -50,9 +50,10 @@ public class FlyAndDash : MonoBehaviour
     void Update()
     {
         #region VOL IF
-        // Fire1 = à la touche X, DUALSENSE = rond
-        if (Input.GetButton("Fire1") && is_flying == false && aerial && currentStamina == maxStamina && MadeAFly == false)
+        // Fire1 = à la touche B, DUALSENSE = carré
+        if (Input.GetButton("Fire1") && is_flying == false && aerial && MadeAFly == false)
         {
+            player.animController.SetBool("Jumping", true);
             dashingPower = dashingPowerOriginal;
             is_flying = true;
             flyactivated = true;
@@ -76,14 +77,14 @@ public class FlyAndDash : MonoBehaviour
             StartBar();
         }
         // lorsque la barre est à 0 on lance la fin du vol
-        if (currentStamina == 0)
+        if (currentStamina == 0 )
         {
             ChuteVol();
         }
         #endregion
 
         #region DASH IF
-        // Fire 2 = a la touche B, DUALSENSE = croix
+        // Fire 2 = a la touche A, DUALSENSE = croix
         if (Input.GetButtonDown("Fire2") && canDash)
         {
             
@@ -133,6 +134,10 @@ public class FlyAndDash : MonoBehaviour
         if (timerStamina < 0)
         {
             timerStamina = 0;
+            currentStamina = 0;
+        }
+        if(currentStamina < 0)
+        {
             currentStamina = 0;
         }
     }

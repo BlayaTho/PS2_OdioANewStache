@@ -10,6 +10,7 @@ public class BonusStamina : MonoBehaviour
     [SerializeField] SpriteRenderer sr;
     [SerializeField] GameObject itself;
     private bool pass = false;
+    private float Respawntime = 3f;
 
 
     void Update()
@@ -20,6 +21,17 @@ public class BonusStamina : MonoBehaviour
             flyDash.timerStamina = 4;
             flyDash.currentStamina = 4;
         }
+        if (pass)
+        {
+            Respawntime -= Time.deltaTime;
+        }
+        if (Respawntime < 0) Respawntime = 0;
+
+        if(Respawntime == 0)
+        {
+            pass = false;
+            sr.enabled = true;
+        }
     }
 
     
@@ -28,6 +40,7 @@ public class BonusStamina : MonoBehaviour
         //si c'est la premiere fois qu'on le touche alors augmentation de la stamina
         if(pass == false)
         {
+            Respawntime = 3f;
             flyDash.timerStamina += 3;
             flyDash.currentStamina += 3;
         }

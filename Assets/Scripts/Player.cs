@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
      public FlyAndDash flyDash;
      public Rigidbody2D rb;
     SpriteRenderer sr;
-    Animator animController;
+    public Animator animController;
     [HideInInspector] public float horizontal_value;
     [HideInInspector] public float vertical_value;
     
@@ -73,7 +74,7 @@ public class Player : MonoBehaviour
         #endregion
 
         #region JUMP IF
-        //Jump = à la touche A et Y, DUALSENSE = carré et triangle
+        //Jump = à la touche X et Y, DUALSENSE = croix et triangle
         if (Input.GetButton("Jump") && can_jump)
         {
             is_jumping = true;
@@ -89,6 +90,11 @@ public class Player : MonoBehaviour
             PhysicDoubleJump();
         }
         #endregion
+
+        if(currentHealth == 0)
+        {
+            SceneManager.LoadScene("Alpha 1.0");
+        }
     }
 
 
@@ -161,6 +167,10 @@ public class Player : MonoBehaviour
         }
 
 
+    }
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        flyDash.aerial = true;
     }
 
     #region ENUM VOID

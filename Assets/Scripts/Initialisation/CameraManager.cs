@@ -8,12 +8,9 @@ public class CameraManager : MonoBehaviour
     Vector3 refVelocity = Vector3.zero;
     [SerializeField] float smoothTime ;
     
-    // Start is called before the first frame update
-    void Start()
-    {       
-    }
+    
 
-    // Update is called once per frame
+    
     void Update()
     {
         Vector3 targetPosition = new Vector3(playerRef.transform.position.x, playerRef.transform.position.y, -10);

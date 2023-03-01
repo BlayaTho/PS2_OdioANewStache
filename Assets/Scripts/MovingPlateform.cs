@@ -38,6 +38,7 @@ public class MovingPlateform : MonoBehaviour
         if(flyDash.is_flying == false)
         {
             collision.transform.SetParent(transform);
+
         }
     }
 
