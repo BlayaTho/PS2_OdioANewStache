@@ -7,6 +7,7 @@ using UnityEngine.SceneManagement;
 public class Player : MonoBehaviour
 {
      public FlyAndDash flyDash;
+    
      public Rigidbody2D rb;
     SpriteRenderer sr;
     public Animator animController;
@@ -34,16 +35,18 @@ public class Player : MonoBehaviour
     public int maxHealth;
     public int currentHealth;
     public HealthBar healthBar;
+    [SerializeField] private float regenvie;
+    [SerializeField] private float regenvieReset;
     #endregion
 
-    #region DOUBLE JUMP VAR
-    [Header("DOUBLE JUMP")]
-    [SerializeField] float jumpForceAerial;
-    [SerializeField] int CountJump;
-    private int LastPressedJumpTime = 0;
-    private int LastOnGroundTime = 0;
-    private bool IsGrounded = false;
-    #endregion
+    /* #region DOUBLE JUMP VAR
+     [Header("DOUBLE JUMP")]
+     [SerializeField] float jumpForceAerial;
+     [SerializeField] int CountJump;
+     private int LastPressedJumpTime = 0;
+     private int LastOnGroundTime = 0;
+     private bool IsGrounded = false;
+     #endregion*/
 
     void Start()
     {
@@ -83,17 +86,32 @@ public class Player : MonoBehaviour
         // active la variable qui annonce qu'on a laché le bouton jump
         if(Input.GetButtonUp("Jump")) releasejump = true;
 
-        //Active DoubleJump si le personnage est en l'air et si il lui reste des double jump
-        if (Input.GetButtonDown("Jump") && duringJump && CountJump > 0)
-        {
-            releasejump = false;
-            PhysicDoubleJump();
-        }
+        /* //Active DoubleJump si le personnage est en l'air et si il lui reste des double jump
+         if (Input.GetButtonDown("Jump") && duringJump && CountJump > 0)
+         {
+             releasejump = false;
+             PhysicDoubleJump();
+         }*/
         #endregion
 
-        if(currentHealth == 0)
+        if (currentHealth == 0)
         {
             SceneManager.LoadScene("Alpha 1.0");
+        }
+        if(currentHealth < maxHealth)
+        {
+            regenvie -= Time.deltaTime;
+         
+            if(regenvie < 0)
+            {
+                regenvie = 0;
+            }
+            if (regenvie == 0)
+            {
+                currentHealth += 1;
+                regenvie = regenvieReset;
+                healthBar.SetHealth(currentHealth);
+            }
         }
     }
 
@@ -101,6 +119,7 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
+        //le jump avec un addforce
         if (is_jumping && can_jump)
         {           
             is_jumping = false;
@@ -129,8 +148,7 @@ public class Player : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, Mathf.Max(rb.velocity.y, maxFallSpeed));
         }
 
-
-        
+        #region DEPLACEMENT DE BASE AVEC ET SANS VOL
         // flip flop pour couper le rb velocity du premier vector qui bloque les deplacements sur le y lors du vol
         if (flyDash.is_flying == false)
         {
@@ -143,7 +161,8 @@ public class Player : MonoBehaviour
             rb.velocity = Vector2.SmoothDamp(rb.velocity, target_velocitydash, ref ref_velocity, flyDash.smoothFly);
             
         }
-          
+        #endregion
+
     } //FIN DU FIXUPDATE
 
 
@@ -152,6 +171,8 @@ public class Player : MonoBehaviour
     {
         if (collision.CompareTag("Ground"))
         {
+            if (flyDash.is_flying == false)
+            {
             flyDash.RegenBar();
             flyDash.MadeAFly = false;
             duringJump = false;
@@ -162,7 +183,9 @@ public class Player : MonoBehaviour
             rb.gravityScale = 4f;
             moveSpeed_horizontal = 720f;
             animController.SetBool("Jumping", false);
-            CountJump = 1; //reset double saut quand on touche le sol
+            }
+            //if (flyDash.is_flying == true) flyDash.ChuteVol();
+           // CountJump = 1; //reset double saut quand on touche le sol
             
         }
 
@@ -171,32 +194,36 @@ public class Player : MonoBehaviour
     private void OnTriggerExit2D(Collider2D collision)
     {
         flyDash.aerial = true;
+        animController.SetBool("Jumping", true);
+        can_jump = false;
     }
 
     #region ENUM VOID
-    void PhysicDoubleJump()
-    {
-        // Garantit que nous ne pouvons pas appeler Jump plusieurs fois à partir d'une seule pression
-        LastPressedJumpTime = 0;
-        LastOnGroundTime = 0;
-        CountJump -= 1;
-
-        // On augmente la force appliquée si on tombe
-        // Cela signifie que nous aurons toujours l'impression de sauter le même montant
-        float force = jumpForceAerial;
-        if (rb.velocity.y < 0)
-            force -= rb.velocity.y;
-
-
-        rb.AddForce(Vector2.up * force, ForceMode2D.Impulse);
-
-    }
-
+  
     public void TakeDamage(int damage)
     {
-        currentHealth -= damage;
-        healthBar.SetHealth(currentHealth);
+            currentHealth -= damage;
+            healthBar.SetHealth(currentHealth);      
     }
+
+    /* void PhysicDoubleJump()
+   {
+       // Garantit que nous ne pouvons pas appeler Jump plusieurs fois à partir d'une seule pression
+       LastPressedJumpTime = 0;
+       LastOnGroundTime = 0;
+       CountJump -= 1;
+
+       // On augmente la force appliquée si on tombe
+       // Cela signifie que nous aurons toujours l'impression de sauter le même montant
+       float force = jumpForceAerial;
+       if (rb.velocity.y < 0)
+           force -= rb.velocity.y;
+
+
+       rb.AddForce(Vector2.up * force, ForceMode2D.Impulse);
+
+   }*/
+
     /*private void Flip()
     {
         if (isFacingRight && horizontal_value < 0f || !isFacingRight && horizontal_value > 0f)
@@ -207,8 +234,6 @@ public class Player : MonoBehaviour
             transform.localScale = localScale;
         }
     }*/
-
-   
     #endregion
 
 }

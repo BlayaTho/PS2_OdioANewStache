@@ -23,6 +23,7 @@ public class SpeedBoost : MonoBehaviour
 
         if (Respawntime == 0)
         {
+            validate = false;
             pass = false;
             sr.enabled = true;
         }
@@ -52,8 +53,7 @@ public class SpeedBoost : MonoBehaviour
 
     public void Boost()
     {
-        //StopCoroutine(NoBoost());
-        //timerstop = 1.8f;
+        
         if(player.moveSpeed_horizontal < 1600)
         {
             player.moveSpeed_vertical = flyDash.speedVertFly + 500;

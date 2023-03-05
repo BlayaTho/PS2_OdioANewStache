@@ -28,14 +28,14 @@ public class FlyAndDash : MonoBehaviour
 
     #region DASH VAR
     [Header("DASH")]
-    [SerializeField] private float dashingPower;
-    [SerializeField] private float dashingCooldown;
-    [SerializeField] private float dashingBeforeFlyCooldown;
+    [SerializeField] private float dashingPower; //puissance du dash actuel
+    [SerializeField] private float dashingCooldown;  // temps du dash de base
+    [SerializeField] private float dashingBeforeFlyCooldown; //temps du dash juste avant le vol
     private Vector2 dashingdirection;
     [HideInInspector] public bool canDash = true;
     [HideInInspector] public bool isDashing = false;
-    [SerializeField] private float DashingPowerDash;
-    [SerializeField] private float dashingPowerOriginal;
+    [SerializeField] private float DashingPowerDash; // puissance du dash dans un dash
+    [SerializeField] private float dashingPowerVol;  // puissance du dash juste avant le vol ( petite impulsion avant le vol)
     [SerializeField] public TrailRenderer tr;
     #endregion
 
@@ -49,28 +49,28 @@ public class FlyAndDash : MonoBehaviour
     
     void Update()
     {
+        /* joystick button 0 = carré dualsense et A
+         * joystick button 1 = croix dualsense et X
+         * joystick button 2 = rond dualsense et B
+         * joystick button 3 = triangle dualsense et Y
+         */
         #region VOL IF
         // Fire1 = à la touche B, DUALSENSE = carré
-        if (Input.GetButton("Fire1") && is_flying == false && aerial && MadeAFly == false)
+        if (Input.GetButton("Vol") && is_flying == false && aerial && MadeAFly == false)
         {
             player.animController.SetBool("Jumping", true);
-            dashingPower = dashingPowerOriginal;
+            dashingPower = dashingPowerVol;
+            player.releasejump = false;
+            player.duringJump = false;
             is_flying = true;
             flyactivated = true;
-            isDashing = true;
-            canDash = false;
-            tr.emitting = true;
-            dashingdirection = new Vector2(player.horizontal_value, player.vertical_value);
-
-            if (dashingdirection == Vector2.zero)
-            {
-                dashingdirection = new Vector2(transform.localScale.x, y: 0);
-            }
-            player.releasejump = false;
-            Invoke("Vol", 0.25f);
-            player.duringJump = false;
+            
+            Dash();
             StartCoroutine(StopDashing());
+            Invoke("Vol", 0.25f);
         }
+        if (Input.GetButtonDown("Vol") && is_flying == true) ChuteVol();
+
         // On commence a consumer la barre
         if (is_flying && currentStamina > 0)
         {
@@ -84,19 +84,11 @@ public class FlyAndDash : MonoBehaviour
         #endregion
 
         #region DASH IF
-        // Fire 2 = a la touche A, DUALSENSE = croix
-        if (Input.GetButtonDown("Fire2") && canDash)
+       
+        if (Input.GetButtonDown("Dash") && canDash)
         {
-            
             dashingPower = DashingPowerDash;
-            isDashing = true;
-            canDash = false;
-            tr.emitting = true;
-            dashingdirection = new Vector2(player.horizontal_value, player.vertical_value);
-            if (dashingdirection == Vector2.zero)
-            {
-                dashingdirection = new Vector2(transform.localScale.x, y: 0);
-            }
+            Dash();
             StartCoroutine(StopDashing());
 
         }
@@ -154,8 +146,19 @@ public class FlyAndDash : MonoBehaviour
             currentStamina = maxStamina;
         }
     }
-#endregion
+    #endregion
+    private void Dash()
+    {
+        isDashing = true;
+        canDash = false;
+        tr.emitting = true;
+        dashingdirection = new Vector2(player.horizontal_value, player.vertical_value);
 
+        if(is_flying == false && dashingdirection == Vector2.zero)
+        {
+            dashingdirection = new Vector2(transform.localScale.x, y: 0);
+        }
+    }
     private IEnumerator StopDashing()
     {
         if (flyactivated)
@@ -179,6 +182,8 @@ public class FlyAndDash : MonoBehaviour
 
     public void Vol()
     {
+        canDash = true;
+        DashingPowerDash = 50;
         MadeAFly = true;
         is_flying = true;
         //animController.SetBool("Aerial", true);
@@ -187,8 +192,9 @@ public class FlyAndDash : MonoBehaviour
         player.moveSpeed_vertical = speedVertFly;
         player.moveSpeed_horizontal = speedHoriFly;
     }
-    private void ChuteVol()
+    public void ChuteVol()
     {
+        DashingPowerDash = 30;
         is_flying = false;
         flyactivated = false;
         tr.emitting = false;

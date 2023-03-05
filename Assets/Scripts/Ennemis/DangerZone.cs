@@ -5,33 +5,46 @@ using UnityEngine;
 public class DangerZone : MonoBehaviour
 {
     public Player player;
-    public bool hurt = false;
-    public float horizontalinverse;
-    public float verticalinverse;
-
-    private void Update()
+    public FlyAndDash flyDash;
+    private void OnCollisionEnter2D(Collision2D collision)
     {
+        player.TakeDamage(1);
         
-
-        if (hurt)
+        if(flyDash.is_flying == true)
         {
-            if (player.rb.velocity.y < 0 )
-            {
-                player.rb.AddForce(new Vector2(0, 70), ForceMode2D.Impulse);
-            }
-            else if (player.rb.velocity.y > 0)
-            {
-                player.rb.AddForce(new Vector2(0, -70), ForceMode2D.Impulse);
-            }
-            else
-            {
-                horizontalinverse = horizontalinverse * -1f;
-                verticalinverse = verticalinverse * -1f;
-                player.rb.AddForce(new Vector2(horizontalinverse * 70, verticalinverse * 70), ForceMode2D.Impulse);
-            }
+            flyDash.ChuteVol();
         }
     }
-    private void OnCollisionEnter2D(Collision2D collision)
+
+    #region ANCIENNE METHODE FOIREUSE
+    /*  private void Update()
+     {
+    public float horizontalinverse;
+    public float verticalinverse;
+         if (hurt && flyDash.is_flying)
+          {
+              horizontalinverse = horizontalinverse * -1f;
+              verticalinverse = verticalinverse * -1f;
+              player.rb.AddForce(new Vector2(horizontalinverse * 70, verticalinverse * 70), ForceMode2D.Impulse);
+          }
+
+          /*if (hurt)
+          {
+              if (player.rb.velocity.y < 0 )
+              {
+                  player.rb.AddForce(new Vector2(0, 70), ForceMode2D.Impulse);
+              }
+              else if (player.rb.velocity.y > 0)
+              {
+                  player.rb.AddForce(new Vector2(0, -70), ForceMode2D.Impulse);
+              }
+              else
+              {
+
+              }
+          }
+      }*/
+    /*private void OnCollisionEnter2D(Collision2D collision)
     {
         horizontalinverse = player.horizontal_value;
         verticalinverse = player.vertical_value;
@@ -42,5 +55,6 @@ public class DangerZone : MonoBehaviour
     private void OnCollisionExit2D(Collision2D collision)
     {
         hurt = false;
-    }
+    }*/
+    #endregion
 }
