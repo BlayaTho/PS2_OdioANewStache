@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FlyAndDash : MonoBehaviour
 {
-     public Player player;
+    public Player player;
     public CheckController checkC;
 
     #region VOL VAR
@@ -88,9 +88,10 @@ public class FlyAndDash : MonoBehaviour
 
         #region DASH IF
        
-        if (Input.GetButtonDown(checkC.inputDash) && canDash)
+        if (Input.GetButtonDown(checkC.inputDash) && canDash )
         {
             dashingPower = DashingPowerDash;
+            
             Dash();
             StartCoroutine(StopDashing());
 
@@ -113,6 +114,7 @@ public class FlyAndDash : MonoBehaviour
 
             ChuteVol();
         }
+        
     }
 
     #region FONCTION ENUM

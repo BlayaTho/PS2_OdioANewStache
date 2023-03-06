@@ -6,6 +6,7 @@ public class CameraZoom : MonoBehaviour
 {
 
     public Camera camerazoom;
+    public GameObject script;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -15,5 +16,7 @@ public class CameraZoom : MonoBehaviour
     private void OnTriggerExit2D(Collider2D collision)
     {
         camerazoom.orthographicSize += 4f;
+        script.gameObject.SetActive(false);
+
     }
 }

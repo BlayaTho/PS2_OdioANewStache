@@ -24,7 +24,7 @@ public class Player : MonoBehaviour
     [SerializeField] public float moveSpeed_horizontal ;
     [HideInInspector] public float moveSpeed_vertical = 0f;
     [SerializeField] public bool duringJump = false;
-    [SerializeField] bool can_jump = false;
+    [SerializeField] public bool can_jump = false;
     [Range(0, 1)][SerializeField] float smooth_time ;
     [SerializeField] float maxFallSpeed;
     private bool is_jumping = false;
