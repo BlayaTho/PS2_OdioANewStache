@@ -5,6 +5,8 @@ using UnityEngine;
 public class FlyAndDash : MonoBehaviour
 {
      public Player player;
+    public CheckController checkC;
+
     #region VOL VAR
     [Header("VOL")]
     [SerializeField] public bool is_flying = false;
@@ -50,13 +52,13 @@ public class FlyAndDash : MonoBehaviour
     void Update()
     {
         /* joystick button 0 = carré dualsense et A
-         * joystick button 1 = croix dualsense et X
-         * joystick button 2 = rond dualsense et B
+         * joystick button 1 = croix dualsense et B
+         * joystick button 2 = rond dualsense et X 
          * joystick button 3 = triangle dualsense et Y
          */
         #region VOL IF
-        // Fire1 = à la touche B, DUALSENSE = carré
-        if (Input.GetButton("Vol") && is_flying == false && aerial && MadeAFly == false)
+        // verification si on est sur xbox ou ps4 dans un autre script pour passer d'un input a un autre
+        if (Input.GetButton(checkC.inputVol) && is_flying == false && aerial && MadeAFly == false)
         {
             player.animController.SetBool("Jumping", true);
             dashingPower = dashingPowerVol;
@@ -65,11 +67,12 @@ public class FlyAndDash : MonoBehaviour
             is_flying = true;
             flyactivated = true;
             
+            
             Dash();
             StartCoroutine(StopDashing());
             Invoke("Vol", 0.25f);
         }
-        if (Input.GetButtonDown("Vol") && is_flying == true) ChuteVol();
+        if (Input.GetButtonDown(checkC.inputVol) && is_flying == true) ChuteVol();
 
         // On commence a consumer la barre
         if (is_flying && currentStamina > 0)
@@ -85,7 +88,7 @@ public class FlyAndDash : MonoBehaviour
 
         #region DASH IF
        
-        if (Input.GetButtonDown("Dash") && canDash)
+        if (Input.GetButtonDown(checkC.inputDash) && canDash)
         {
             dashingPower = DashingPowerDash;
             Dash();

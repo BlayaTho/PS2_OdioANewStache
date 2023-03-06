@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.XR;
 
 public class Player : MonoBehaviour
 {
      public FlyAndDash flyDash;
+    public CheckController checkC;
     
      public Rigidbody2D rb;
     SpriteRenderer sr;
@@ -48,6 +50,7 @@ public class Player : MonoBehaviour
      private bool IsGrounded = false;
      #endregion*/
 
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -56,11 +59,13 @@ public class Player : MonoBehaviour
 
         currentHealth = maxHealth;
         healthBar.SetMaxHealth(maxHealth);
-
+        
     }
 
     void Update()
     {
+        
+        
         #region CAPTURE DONNEES
         horizontal_value = Input.GetAxis("Horizontal");
         vertical_value = Input.GetAxis("Vertical");
@@ -78,13 +83,13 @@ public class Player : MonoBehaviour
 
         #region JUMP IF
         //Jump = à la touche X et Y, DUALSENSE = croix et triangle
-        if (Input.GetButton("Jump") && can_jump)
+        if (Input.GetButton(checkC.inputJump) && can_jump)
         {
             is_jumping = true;
             animController.SetBool("Jumping", true);
         }
         // active la variable qui annonce qu'on a laché le bouton jump
-        if(Input.GetButtonUp("Jump")) releasejump = true;
+        if(Input.GetButtonUp(checkC.inputJump)) releasejump = true;
 
         /* //Active DoubleJump si le personnage est en l'air et si il lui reste des double jump
          if (Input.GetButtonDown("Jump") && duringJump && CountJump > 0)

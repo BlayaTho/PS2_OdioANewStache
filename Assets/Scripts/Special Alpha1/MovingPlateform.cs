@@ -33,7 +33,7 @@ public class MovingPlateform : MonoBehaviour
         transform.position = Vector2.MoveTowards(transform.position, points[i].position, speed * Time.deltaTime);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+   /* private void OnCollisionEnter2D(Collision2D collision)
     {
         if(flyDash.is_flying == false)
         {
@@ -49,5 +49,5 @@ public class MovingPlateform : MonoBehaviour
             collision.transform.SetParent(null);
         }
             
-    }
+    }*/
 }
