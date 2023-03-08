@@ -36,8 +36,9 @@ public class FlyAndDash : MonoBehaviour
     private Vector2 dashingdirection;
     [HideInInspector] public bool canDash = true;
     [HideInInspector] public bool isDashing = false;
-    [SerializeField] private float DashingPowerDash; // puissance du dash dans un dash
+    [SerializeField] float DashingPowerDash; // puissance du dash dans un dash
     [SerializeField] private float dashingPowerVol;  // puissance du dash juste avant le vol ( petite impulsion avant le vol)
+    [SerializeField] private float timerChargeDash = 1.5f;
     [SerializeField] public TrailRenderer tr;
     #endregion
 
@@ -48,7 +49,19 @@ public class FlyAndDash : MonoBehaviour
         staminaBar.SetMaxStamina(maxStamina);
     }
 
-    
+    public bool getCanDash()
+    {
+        return canDash;
+    }
+    public bool getIsDashing()
+    {
+        return isDashing;
+    }
+
+    public void setIsDashing(bool id)
+    {
+        if(id != isDashing) isDashing = id;
+    }
     void Update()
     {
         /* joystick button 0 = carré dualsense et A
@@ -72,7 +85,7 @@ public class FlyAndDash : MonoBehaviour
             StartCoroutine(StopDashing());
             Invoke("Vol", 0.25f);
         }
-        if (Input.GetButtonDown(checkC.inputVol) && is_flying == true) ChuteVol();
+        if (Input.GetButtonDown(checkC.inputVol) && is_flying == true) ChuteVol(); 
 
         // On commence a consumer la barre
         if (is_flying && currentStamina > 0)
@@ -101,6 +114,15 @@ public class FlyAndDash : MonoBehaviour
         {
             player.rb.velocity = dashingdirection.normalized * dashingPower;
             return;
+            
+        }
+
+       // for (timerChargeDash = 2.0f; timerChargeDash == 0f; timerChargeDash = 2.0f  )
+        if(canDash == false && is_flying)
+        {
+            timerChargeDash -= Time.deltaTime;
+            timerChargeDash = Mathf.Clamp(timerChargeDash, 0.0f, 1.5f);
+            if (timerChargeDash == 0.0f) canDash = true; 
         }
 
         #endregion
@@ -154,6 +176,7 @@ public class FlyAndDash : MonoBehaviour
     #endregion
     private void Dash()
     {
+        timerChargeDash = 1.5f;
         isDashing = true;
         canDash = false;
         tr.emitting = true;

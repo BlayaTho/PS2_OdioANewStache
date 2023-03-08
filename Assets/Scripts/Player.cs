@@ -7,7 +7,7 @@ using UnityEngine.XR;
 
 public class Player : MonoBehaviour
 {
-     public FlyAndDash flyDash;
+    FlyAndDash flyDash;
     public CheckController checkC;
     
      public Rigidbody2D rb;
@@ -56,7 +56,7 @@ public class Player : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         sr = GetComponent<SpriteRenderer>();
         animController = GetComponent<Animator>();
-
+        flyDash = GetComponent<FlyAndDash>();
         currentHealth = maxHealth;
         healthBar.SetMaxHealth(maxHealth);
         
@@ -69,14 +69,8 @@ public class Player : MonoBehaviour
         #region CAPTURE DONNEES
         horizontal_value = Input.GetAxis("Horizontal");
         vertical_value = Input.GetAxis("Vertical");
-        if(horizontal_value < 0)
-        {
-            sr.flipX = true;
-        }
-        else
-        {
-            sr.flipX = false;
-        }
+        if(horizontal_value < 0) sr.flipX = true;
+        else sr.flipX = false;
         // Flip();
         animController.SetFloat("Speed", Mathf.Abs(horizontal_value));
         #endregion
@@ -126,20 +120,16 @@ public class Player : MonoBehaviour
     {
         //le jump avec un addforce
         if (is_jumping && can_jump)
-        {           
+        {
             is_jumping = false;
             duringJump = true;
             flyDash.aerial = true;
-            
-            
-                rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
-            
+            rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
             can_jump = false;
         }
         
-        
        // Higher gravity when falling of a jump
-        if (releasejump && duringJump && flyDash.isDashing == false && flyDash.is_flying == false)
+        if (releasejump && duringJump && flyDash.getIsDashing() == false && flyDash.is_flying == false)
         {
             
             rb.AddForce(new Vector2(0, -50), ForceMode2D.Force);
@@ -155,16 +145,15 @@ public class Player : MonoBehaviour
 
         #region DEPLACEMENT DE BASE AVEC ET SANS VOL
         // flip flop pour couper le rb velocity du premier vector qui bloque les deplacements sur le y lors du vol
-        if (flyDash.is_flying == false)
+        if (!flyDash.is_flying)
         {
             Vector2 target_velocity = new Vector2(horizontal_value * moveSpeed_horizontal * Time.fixedDeltaTime, rb.velocity.y);
             rb.velocity = Vector2.SmoothDamp(rb.velocity, target_velocity, ref ref_velocity, smooth_time);
         }
-        else if (flyDash.is_flying)
+        else
         {
             Vector2 target_velocitydash = new Vector2(horizontal_value * moveSpeed_horizontal * Time.fixedDeltaTime, vertical_value * moveSpeed_vertical * Time.fixedDeltaTime);
             rb.velocity = Vector2.SmoothDamp(rb.velocity, target_velocitydash, ref ref_velocity, flyDash.smoothFly);
-            
         }
         #endregion
 
@@ -174,10 +163,8 @@ public class Player : MonoBehaviour
     // Lorsque le personnage touche le sol
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.CompareTag("Ground"))
+        if (collision.CompareTag("Ground") && !flyDash.is_flying)
         {
-            if (flyDash.is_flying == false)
-            {
             flyDash.RegenBar();
             flyDash.MadeAFly = false;
             duringJump = false;
@@ -188,10 +175,8 @@ public class Player : MonoBehaviour
             rb.gravityScale = 4f;
             moveSpeed_horizontal = 720f;
             animController.SetBool("Jumping", false);
-            }
             //if (flyDash.is_flying == true) flyDash.ChuteVol();
-           // CountJump = 1; //reset double saut quand on touche le sol
-            
+            // CountJump = 1; //reset double saut quand on touche le sol
         }
 
 

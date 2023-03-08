@@ -19,6 +19,7 @@ public class ModifPlayground : MonoBehaviour
     public GameObject booststamina5;
 
     public GameObject zoomCam;
+    public GameObject aliot;
 
 
 
@@ -39,5 +40,6 @@ public class ModifPlayground : MonoBehaviour
         booststamina3.gameObject.SetActive(true);
         booststamina4.gameObject.SetActive(true);
         booststamina5.gameObject.SetActive(true);
+        aliot.gameObject.SetActive(true);
     }
 }
