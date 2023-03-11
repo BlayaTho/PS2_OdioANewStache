@@ -8,7 +8,7 @@ public class CameraZoom : MonoBehaviour
     public Camera camerazoom;
     public GameObject script;
 
-    float CameraZoomValue = 8;
+    float CameraZoomValue = 9f;
     float CameraDezoomValue = 18;
     bool dezooming = false;
     float lerpTime=0;

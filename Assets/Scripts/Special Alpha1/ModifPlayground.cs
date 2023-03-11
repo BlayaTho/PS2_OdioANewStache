@@ -7,6 +7,7 @@ public class ModifPlayground : MonoBehaviour
     public GameObject murBlock;
     public GameObject murBlock2;
     public GameObject murBlock3;
+    public GameObject murBlock4;
 
 
     public GameObject boostvit;
@@ -20,6 +21,11 @@ public class ModifPlayground : MonoBehaviour
 
     public GameObject zoomCam;
     public GameObject aliot;
+    public GameObject aliot2;
+    public GameObject aliot3;
+    public GameObject aliot4;
+    public GameObject aliot5;
+    public GameObject aliot6;
 
 
 
@@ -29,6 +35,7 @@ public class ModifPlayground : MonoBehaviour
         murBlock.gameObject.SetActive(false);
         murBlock2.gameObject.SetActive(false);
         murBlock3.gameObject.SetActive(false);
+        murBlock4.gameObject.SetActive(false);
         zoomCam.gameObject.SetActive(false);
         
 
@@ -41,5 +48,10 @@ public class ModifPlayground : MonoBehaviour
         booststamina4.gameObject.SetActive(true);
         booststamina5.gameObject.SetActive(true);
         aliot.gameObject.SetActive(true);
+        aliot2.gameObject.SetActive(true);
+        aliot3.gameObject.SetActive(true);  
+        aliot4.gameObject.SetActive(true);
+        aliot5.gameObject.SetActive(true);
+        aliot6.gameObject.SetActive(true);
     }
 }
